@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<canvas id="canvas1" width="1000" height="1000" style="position:absolute;width:100%;height:100%;background-color:#000000;top:0;left:0;">
+		</canvas>
+
+    <script>
+      const canvas = document.getElementById("canvas1");
+      const context = canvas.getContext("2d");
+      const dotArray = [];
+      let x;
+      let projectedx;
+      let y;
+      let projectedy;
+      let z;
+      let angle = 0;
+      let tempArray = [];
+      const size = 8;
+	  	let hue = 180;
+			let angleX = 1;
+			let shouldRotX = false;
+			let multiplierX = 1;
+			let angleY = 1;
+			let shouldRotY = false;
+			let multiplierY = 1;
+			let angleZ = 1;
+			let shouldRotZ = false;
+			let multiplierZ = 1;
+
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+			console.log(canvas.height,canvas.width);
+      //context.strokeStyle = "white";
+      //context.beginPath();
+      //context.moveTo(100,100);
+      //context.lineTo(200,200);
+      //context.stroke();
+      //context.fillRect(100,100,150,170);
+
+			document.addEventListener("keydown", function(event){
+				if(event.key == "ArrowRight"){
+					angleY += 0.01;
+					shouldRotY = true;
+				} else {shouldRotY = false;}
+				console.log(event.key);
+			});
+
+      class Dot {
+        constructor(){
+          this.x = x;
+					this.rotx = this.x;
+          this.y = y;
+					this.roty = this.y;
+          this.z = z;
+					this.rotz = this.z;
+          this.projectedx = project(this.x,this.z);
+          this.projectedy = project(this.y,this.z);
+		  this.color = "hsl(" + hue + ", 100%, 50%)";
+		  //this.color = "rgb(" + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + ")";
+        }
+
+        update(){
+
+          rotate(this.x,this.y,this.z,shouldRotX,shouldRotY,shouldRotZ);
+					//if(shouldRotX == true){
+          	this.rotx = tempArray[0];
+					//}
+					//if(shouldRotY == true){
+          	this.roty = tempArray[1];
+					//}
+					//if(shouldRotZ == true){
+          	this.rotz = tempArray[2];
+					//}
+
+          this.projectedx = project(this.rotx,this.rotz);
+          this.projectedy = project(this.roty,this.rotz);
+          this.draw();
+        }
+
+        draw(){
+					context.fillStyle = this.color;
+					context.beginPath();
+					context.arc(this.projectedx*150+900,this.projectedy*150+450,1,0,Math.PI*2);
+					context.fill();
+        }
+      }
+
+      function project(value,z){
+        projectedValue = value / (z+16);
+        return projectedValue;
+      }
+
+      function rotate(x,y,z, shouldX, shouldY, shouldZ){
+
+				let rotx;
+				let roty;
+				let rotz;
+
+				//if(shouldX == true) {
+					roty = (Math.cos(multiplierX*angleX)*y) + (Math.sin(multiplierX*angleX)*z);
+					rotz = -(Math.sin(multiplierX*angleX)*y) + (Math.cos(multiplierX*angleX)*z);
+					y = roty;
+					z = rotz;
+				//}
+
+				//if(shouldY == true) {
+					rotx = (Math.cos(multiplierY*angleY) * x) - (Math.sin(multiplierY*angleY) * z);
+					rotz = (Math.sin(multiplierY*angleY) * x) + (Math.cos(multiplierY*angleY) * z);
+					x = rotx;
+					z = rotz;
+				//}
+
+				//if(shouldZ == true) {
+					rotx = (Math.cos(multiplierZ*angleY)*x) + (Math.sin(multiplierZ*angleY)*y);
+					roty = (Math.cos(multiplierZ*angleY)*y) -(Math.sin(multiplierZ*angleY)*x);
+					x = rotx;
+					y = roty;
+				//}
+        tempArray = [x,y,z];
+      }
+
+      function init(){
+		//for (let temp = 0; temp<2; temp++){
+			for(let tempx = -size; tempx <= size; tempx++){
+				for(let tempy = -size; tempy <= size; tempy++){
+					for(let tempz = -size; tempz <= size; tempz++){
+						x = tempx;
+						y = tempy;
+						z = tempz;
+						dotArray.push(new Dot());
+						hue +=0.025;
+					}
+				}
+			}
+		//}
+      }
+    init();
+
+    function animate(){
+      requestAnimationFrame(animate);
+      context.fillStyle = "rgba(0,0,0,0.2)";
+      context.fillRect(0,0,canvas.width,canvas.height);
+      for(let temp = 0; temp < dotArray.length; temp++){
+        dotArray[temp].update();
+      }
+			angleX += 0.0;
+			angleY += 0.02;
+			angleZ += 0.02;
+    }
+    animate();
+
+    </script>
+  </body>
+</html>
