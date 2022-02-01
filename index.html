@@ -140,14 +140,17 @@
 
     function animate(){
       requestAnimationFrame(animate);
-      context.fillStyle = "rgba(0,0,0,0.2)";
-      context.fillRect(0,0,canvas.width,canvas.height);
-      for(let temp = 0; temp < dotArray.length; temp++){
-        dotArray[temp].update();
-      }
-			angleX += 0.0;
+	
+      for(let count = 0; count < 2; count++){
+	context.fillStyle = "rgba(0,0,0,1.0)";
+      	context.fillRect(0,0,canvas.width,canvas.height);
+      	for(let temp = 0; temp < dotArray.length; temp++){
+        	dotArray[temp].update();
+      	}
+			angleX += 0.02;
 			angleY += 0.02;
 			angleZ += 0.02;
+      }
     }
     animate();
 
